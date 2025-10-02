@@ -20,4 +20,7 @@ Route::get('/', function () {
 
 // Post CRUD rotaları
 Route::resource('posts', PostController::class);
-//Route::post('/posts/create', [PostController::class, 'store'])->name('posts.create');
+
+
+
+

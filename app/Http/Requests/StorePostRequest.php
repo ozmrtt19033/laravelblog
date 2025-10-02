@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class StorePostRequest extends FormRequest
 {
     // Bu method true döndürürse form request kullanıma açılır.
-    public function authorize(): bool
+    public function authorize()
     {
         // Şimdilik true. Daha sonra policy ile kontrol edebiliriz.
         return true;
