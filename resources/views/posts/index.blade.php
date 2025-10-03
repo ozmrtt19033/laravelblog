@@ -35,7 +35,7 @@
                         <a href="{{ route('posts.show', $post) }}" class="btn btn-primary">Görüntüle</a>
                         <a href="{{ route('posts.edit', $post) }}" class="btn btn-warning">Düzenle</a>
                         <form action="{{ route('posts.destroy', $post) }}" method="POST" class="delete-form">
-                            @csrf
+                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">Sil</button>
                         </form>
