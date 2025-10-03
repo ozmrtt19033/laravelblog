@@ -84,6 +84,7 @@
             font-size: 1rem;
             transition: all 0.3s;
             font-family: inherit;
+            box-sizing: border-box;
         }
 
         .form-input:focus,
@@ -95,8 +96,12 @@
         }
 
         .form-textarea {
-            min-height: 200px;
+            min-height: 150px;
             resize: vertical;
+        }
+
+        .form-select[multiple] {
+            min-height: 120px;
         }
 
         /* Character Counter */
@@ -218,7 +223,6 @@
                         class="form-input"
                         value="{{ old('title') }}"
                         placeholder="Harika bir başlık yazın..."
-                        maxlength="255"
                         required
                     >
                     @error('title')
@@ -227,34 +231,53 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="content">İçerik</label>
+                    <label class="form-label" for="body">İçerik</label>
                     <textarea
-                        id="content"
-                        name="content"
+                        id="body"
+                        name="body"
                         class="form-textarea"
                         placeholder="Hikayenizi anlatın..."
                         oninput="updateCharCount(this)"
                         required
-                    >{{ old('content') }}</textarea>
+                    >{{ old('body') }}</textarea>
                     <div class="char-counter">
                         <span id="char-count">0</span> karakter
                     </div>
-                    @error('content')
+                    @error('body')
                     <div class="error-message">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="status">Durum</label>
-                    <select id="status" name="status" class="form-select">
-                        <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>
-                            📝 Taslak
-                        </option>
-                        <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>
-                            🚀 Yayımla
-                        </option>
+                    <label class="form-label" for="category_ids">Kategoriler</label>
+                    <select name="category_ids[]" id="category_ids" class="form-select" multiple>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ in_array($category->id, old('category_ids', [])) ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
                     </select>
-                    @error('status')
+                    <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem; display: block;">
+                        Ctrl (veya Cmd) tuşuna basılı tutarak birden fazla seçim yapabilirsiniz
+                    </small>
+                    @error('category_ids')
+                    <div class="error-message">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="tag_ids">Etiketler</label>
+                    <select name="tag_ids[]" id="tag_ids" class="form-select" multiple>
+                        @foreach($tags as $tag)
+                            <option value="{{ $tag->id }}" {{ in_array($tag->id, old('tag_ids', [])) ? 'selected' : '' }}>
+                                {{ $tag->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem; display: block;">
+                        Ctrl (veya Cmd) tuşuna basılı tutarak birden fazla seçim yapabilirsiniz
+                    </small>
+                    @error('tag_ids')
                     <div class="error-message">{{ $message }}</div>
                     @enderror
                 </div>
@@ -279,8 +302,8 @@
 
         // Sayfa yüklendiğinde karakter sayısını güncelle
         document.addEventListener('DOMContentLoaded', function() {
-            const textarea = document.getElementById('content');
-            if (textarea.value) {
+            const textarea = document.getElementById('body');
+            if (textarea && textarea.value) {
                 updateCharCount(textarea);
             }
         });
