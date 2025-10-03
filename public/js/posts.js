@@ -4,11 +4,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     deleteForms.forEach(form => {
         form.addEventListener('submit', function(e) {
-            if (!confirm('Bu postu silmek istediğinize emin misiniz?')) {
-                e.preventDefault();
-            }
+            e.preventDefault(); // formu direkt göndermesin
+            /***swal kontrolleri yapıldı***/
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: "Bu postu silmek istediğinize emin misiniz?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet, sil!',
+                cancelButtonText: 'İptal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // sadece onay verilirse gönder
+                }
+            });
         });
     });
+
 
     // Başarı mesajını otomatik gizleme
     const alertSuccess = document.querySelector('.alert-success');

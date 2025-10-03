@@ -13,6 +13,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
+
     <style>
         /* Navigation Styles */
         .top-nav {
@@ -155,7 +156,11 @@
     @yield('content')
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <!-- Scripts -->
 <script src="{{ asset('js/app.js') }}" defer></script>
+<script src="{{ asset('js/posts.js') }}" defer></script>
+<!--Swal Alert-->
 </body>
 </html>

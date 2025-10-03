@@ -232,10 +232,10 @@
                         <div class="post-actions">
                             <a href="{{ route('posts.show', $post) }}" class="btn btn-primary">👁️ Görüntüle</a>
                             <a href="{{ route('posts.edit', $post) }}" class="btn btn-warning">✏️ Düzenle</a>
-                            <form action="{{ route('posts.destroy', $post) }}" method="POST" class="delete-form" onsubmit="return confirm('Bu postu silmek istediğinize emin misiniz?')">
+                            <form action="{{ route('posts.destroy', $post) }}" method="POST" class="delete-form">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger">🗑️ Sil</button>
+                                <button type="submit" class="btn btn-danger delete-form">🗑️ Sil</button>
                             </form>
                         </div>
                     </div>
