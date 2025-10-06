@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,6 +24,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+    //kategori işlemleri
+    Route::resource('category', CategoryController::class);
+    // veya
+    Route::get('/category', [CategoryController::class, 'index'])->name('category.index');
+    Route::get('/category/create', [CategoryController::class, 'create'])->name('category.create');
+
 });
 
 require __DIR__.'/auth.php';

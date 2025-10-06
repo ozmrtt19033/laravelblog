@@ -132,6 +132,11 @@
             <a href="{{ route('posts.index') }}" class="nav-link">
                 📝 Posts
             </a>
+
+            <a href="{{ route('category.index') }}" class="nav-link">
+                📝 Kategoriler
+            </a>
+
             <a href="{{ route('posts.create') }}" class="nav-link">
                 ✨ Yeni Post
             </a>

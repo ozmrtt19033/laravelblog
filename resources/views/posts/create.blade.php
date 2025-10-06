@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <style>
         /* Container Styles */
         .create-container {
@@ -75,8 +78,7 @@
         }
 
         .form-input,
-        .form-textarea,
-        .form-select {
+        .form-textarea {
             width: 100%;
             padding: 0.75rem 1rem;
             border: 2px solid #e5e7eb;
@@ -88,20 +90,70 @@
         }
 
         .form-input:focus,
-        .form-textarea:focus,
-        .form-select:focus {
+        .form-textarea:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .form-textarea {
-            min-height: 150px;
+            min-height: 200px;
             resize: vertical;
         }
 
-        .form-select[multiple] {
-            min-height: 120px;
+        /* Select2 Custom Styling */
+        .select2-container--default .select2-selection--multiple {
+            border: 2px solid #e5e7eb !important;
+            border-radius: 8px !important;
+            min-height: 45px !important;
+            padding: 0.25rem 0.5rem !important;
+        }
+
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: none !important;
+            color: white !important;
+            border-radius: 6px !important;
+            padding: 0.35rem 0.75rem !important;
+            margin: 0.25rem !important;
+            font-weight: 500 !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: white !important;
+            margin-right: 0.5rem !important;
+            font-weight: bold !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            color: #fee !important;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background: #667eea !important;
+        }
+
+        .select2-container--default .select2-search--inline .select2-search__field {
+            font-family: inherit !important;
+            padding: 0.25rem !important;
+        }
+
+        .select2-dropdown {
+            border: 2px solid #e5e7eb !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .section-helper {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: block;
         }
 
         /* Character Counter */
@@ -250,16 +302,14 @@
 
                 <div class="form-group">
                     <label class="form-label" for="category_ids">Kategoriler</label>
-                    <select name="category_ids[]" id="category_ids" class="form-select" multiple>
+                    <select name="category_ids[]" id="category_ids" class="form-select" multiple="multiple" style="width: 100%;">
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ in_array($category->id, old('category_ids', [])) ? 'selected' : '' }}>
                                 {{ $category->name }}
                             </option>
                         @endforeach
                     </select>
-                    <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem; display: block;">
-                        Ctrl (veya Cmd) tuşuna basılı tutarak birden fazla seçim yapabilirsiniz
-                    </small>
+                    <span class="section-helper">Birden fazla kategori seçebilirsiniz</span>
                     @error('category_ids')
                     <div class="error-message">{{ $message }}</div>
                     @enderror
@@ -267,16 +317,14 @@
 
                 <div class="form-group">
                     <label class="form-label" for="tag_ids">Etiketler</label>
-                    <select name="tag_ids[]" id="tag_ids" class="form-select" multiple>
+                    <select name="tag_ids[]" id="tag_ids" class="form-select" multiple="multiple" style="width: 100%;">
                         @foreach($tags as $tag)
                             <option value="{{ $tag->id }}" {{ in_array($tag->id, old('tag_ids', [])) ? 'selected' : '' }}>
                                 {{ $tag->name }}
                             </option>
                         @endforeach
                     </select>
-                    <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem; display: block;">
-                        Ctrl (veya Cmd) tuşuna basılı tutarak birden fazla seçim yapabilirsiniz
-                    </small>
+                    <span class="section-helper">Birden fazla etiket seçebilirsiniz</span>
                     @error('tag_ids')
                     <div class="error-message">{{ $message }}</div>
                     @enderror
@@ -294,14 +342,41 @@
         </div>
     </div>
 
+    <!-- jQuery (Select2 için gerekli) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
         function updateCharCount(textarea) {
             const count = textarea.value.length;
             document.getElementById('char-count').textContent = count;
         }
 
-        // Sayfa yüklendiğinde karakter sayısını güncelle
-        document.addEventListener('DOMContentLoaded', function() {
+        // Sayfa yüklendiğinde
+        $(document).ready(function() {
+            // Select2 başlat
+            $('#category_ids').select2({
+                // placeholder: 'Kategori seçin...',
+                allowClear: true,
+                language: {
+                    noResults: function() {
+                        return "Sonuç bulunamadı";
+                    }
+                }
+            });
+
+            $('#tag_ids').select2({
+                // placeholder: 'Etiket seçin...',
+                allowClear: true,
+                language: {
+                    noResults: function() {
+                        return "Sonuç bulunamadı";
+                    }
+                }
+            });
+
+            // Karakter sayısını güncelle
             const textarea = document.getElementById('body');
             if (textarea && textarea.value) {
                 updateCharCount(textarea);
