@@ -48,7 +48,7 @@
             color: #ef4444;
         }
 
-        .form-control, .form-select {
+        .form-control {
             width: 100%;
             padding: 0.75rem 1rem;
             border: 2px solid #e5e7eb;
@@ -59,7 +59,7 @@
             background: white;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -81,7 +81,7 @@
             gap: 0.25rem;
         }
 
-        .form-control.is-invalid, .form-select.is-invalid {
+        .form-control.is-invalid {
             border-color: #ef4444;
             background-color: #fef2f2;
         }
@@ -230,6 +230,20 @@
             border: 2px solid #fee2e2;
         }
 
+        .slug-preview {
+            background: #f3f4f6;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .slug-preview strong {
+            color: #667eea;
+        }
+
         @media (max-width: 768px) {
             .edit-container {
                 padding: 0 1rem;
@@ -259,8 +273,8 @@
 
     <div class="edit-container">
         <div class="header">
-            <h1>✏️ Kategori Düzenle</h1>
-            <p>"{{ $category->name }}" kategorisini düzenleyin</p>
+            <h1>#️⃣ Etiket Düzenle</h1>
+            <p>"{{ $tag->name }}" etiketini düzenleyin</p>
         </div>
 
         @if($errors->any())
@@ -278,73 +292,49 @@
             <!-- İstatistikler -->
             <div class="stats-box">
                 <div class="stat-item">
-                    <span class="stat-label">📊 Toplam Post</span>
-                    <span class="stat-value">{{ $category->posts->count() }}</span>
+                    <span class="stat-label">📊 Kullanım Sayısı</span>
+                    <span class="stat-value">{{ $tag->posts->count() }} Post</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-label">📁 Alt Kategori</span>
-                    <span class="stat-value">{{ $category->children->count() }}</span>
-                </div>
-                @if($category->created_at)
+                @if($tag->created_at)
                     <div class="stat-item">
                         <span class="stat-label">📅 Oluşturulma</span>
-                        <span class="stat-value">{{ $category->created_at->format('d.m.Y') }}</span>
+                        <span class="stat-value">{{ $tag->created_at->format('d.m.Y') }}</span>
+                    </div>
+                @endif
+                @if($tag->updated_at && $tag->updated_at != $tag->created_at)
+                    <div class="stat-item">
+                        <span class="stat-label">🔄 Son Güncelleme</span>
+                        <span class="stat-value">{{ $tag->updated_at->format('d.m.Y') }}</span>
                     </div>
                 @endif
             </div>
 
-            @if($category->children->count() > 0)
+            @if($tag->posts->count() > 0)
                 <div class="info-box">
                     <p>
-                        ⚠️ <strong>Dikkat:</strong> Bu kategorinin {{ $category->children->count() }} alt kategorisi var.
-                        Üst kategori değiştirirseniz, bu kategori başka bir kategorinin altına taşınacaktır.
+                        💡 <strong>Bilgi:</strong> Bu etiket {{ $tag->posts->count() }} adet postta kullanılıyor.
+                        Etiket adını değiştirirseniz, tüm postlarda otomatik olarak güncellenecektir.
                     </p>
                 </div>
             @endif
 
-            <form action="{{ route('category.update', $category) }}" method="POST">
+            <form action="{{ route('tags.update', $tag) }}" method="POST">
                 @csrf
                 @method('PUT')
 
                 <div class="form-group">
-                    <label for="parent_id" class="form-label">
-                        📁 Üst Kategori
-                    </label>
-                    <select
-                        name="parent_id"
-                        id="parent_id"
-                        class="form-select @error('parent_id') is-invalid @enderror"
-                    >
-                        <option value="">🏠 Ana Kategori (Üst kategorisi yok)</option>
-                        @foreach($parentCategories as $parent)
-                            <option value="{{ $parent->id }}"
-                                {{ old('parent_id', $category->parent_id) == $parent->id ? 'selected' : '' }}>
-                                📂 {{ $parent->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('parent_id')
-                    <div class="error-message">
-                        ⚠️ {{ $message }}
-                    </div>
-                    @enderror
-                    <div class="help-text">
-                        💡 Kategoriyi bir üst kategorinin altına taşımak istiyorsanız seçin. Ana kategori yapmak için boş bırakın.
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label for="name" class="form-label">
-                        📝 Kategori Adı <span class="required">*</span>
+                        🏷️ Etiket Adı <span class="required">*</span>
                     </label>
                     <input
                         type="text"
                         name="name"
                         id="name"
                         class="form-control @error('name') is-invalid @enderror"
-                        value="{{ old('name', $category->name) }}"
-                        placeholder="Örn: Teknoloji, Seyahat, Yemek Tarifleri..."
+                        value="{{ old('name', $tag->name) }}"
+                        placeholder="Örn: Laravel, React, Yapay Zeka..."
                         required
+                        autofocus
                     >
                     @error('name')
                     <div class="error-message">
@@ -352,7 +342,7 @@
                     </div>
                     @enderror
                     <div class="help-text">
-                        💡 Kategorinize kısa ve açıklayıcı bir isim verin.
+                        💡 Etiketinize kısa ve öz bir isim verin. Genellikle tek kelime veya kısa ifadeler tercih edilir.
                     </div>
                 </div>
 
@@ -365,16 +355,19 @@
                         name="slug"
                         id="slug"
                         class="form-control @error('slug') is-invalid @enderror"
-                        value="{{ old('slug', $category->slug) }}"
-                        placeholder="teknoloji, yemek-tarifleri..."
+                        value="{{ old('slug', $tag->slug) }}"
+                        placeholder="laravel, yapay-zeka..."
                     >
                     @error('slug')
                     <div class="error-message">
                         ⚠️ {{ $message }}
                     </div>
                     @enderror
+                    <div class="slug-preview">
+                        Mevcut URL: <strong>{{ url('/tags/' . $tag->slug) }}</strong>
+                    </div>
                     <div class="help-text">
-                        💡 Kategori adından otomatik oluşturulur. Özel bir URL istiyorsanız değiştirebilirsiniz.
+                        💡 Etiket adından otomatik oluşturulur. Özel bir URL istiyorsanız değiştirebilirsiniz.
                     </div>
                 </div>
 
@@ -386,15 +379,15 @@
                         name="description"
                         id="description"
                         class="form-control @error('description') is-invalid @enderror"
-                        placeholder="Bu kategori hangi konuları içerecek? Kısa bir açıklama yazın..."
-                    >{{ old('description', $category->description) }}</textarea>
+                        placeholder="Bu etiket hangi konuları kapsıyor? Kısa bir açıklama yazın..."
+                    >{{ old('description', $tag->description) }}</textarea>
                     @error('description')
                     <div class="error-message">
                         ⚠️ {{ $message }}
                     </div>
                     @enderror
                     <div class="help-text">
-                        💡 Kategorinizin içeriğini tanımlayan kısa bir metin (İsteğe bağlı).
+                        💡 Etiketinizin içeriğini tanımlayan kısa bir metin (İsteğe bağlı).
                     </div>
                 </div>
 
@@ -402,7 +395,7 @@
                     <button type="submit" class="btn btn-primary">
                         💾 Değişiklikleri Kaydet
                     </button>
-                    <a href="{{ route('category.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('tags.index') }}" class="btn btn-secondary">
                         ← Geri Dön
                     </a>
                 </div>
@@ -415,30 +408,25 @@
                 🗑️ Tehlikeli Bölge
             </h3>
 
-            @if($category->posts->count() === 0 && $category->children->count() === 0)
+            @if($tag->posts->count() === 0)
                 <p style="color: #6b7280; margin-bottom: 1rem;">
-                    Bu kategoriyi kalıcı olarak silebilirsiniz. Bu işlem geri alınamaz!
+                    Bu etiketi kalıcı olarak silebilirsiniz. Bu işlem geri alınamaz!
                 </p>
-                <form action="{{ route('category.destroy', $category) }}" method="POST" onsubmit="return confirm('Bu kategoriyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz!')">
+                <form action="{{ route('tags.destroy', $tag) }}" method="POST" onsubmit="return confirm('Bu etiketi silmek istediğinize emin misiniz? Bu işlem geri alınamaz!')">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">
-                        🗑️ Kategoriyi Kalıcı Olarak Sil
+                        🗑️ Etiketi Kalıcı Olarak Sil
                     </button>
                 </form>
             @else
                 <div class="alert alert-warning">
-                    ⚠️ <strong>Bu kategori silinemez!</strong>
+                    ⚠️ <strong>Bu etiket silinemez!</strong>
                     <ul style="margin: 0.5rem 0 0 1.5rem; padding: 0;">
-                        @if($category->posts->count() > 0)
-                            <li>{{ $category->posts->count() }} adet post içeriyor</li>
-                        @endif
-                        @if($category->children->count() > 0)
-                            <li>{{ $category->children->count() }} adet alt kategori içeriyor</li>
-                        @endif
+                        <li>{{ $tag->posts->count() }} adet postta kullanılıyor</li>
                     </ul>
                     <p style="margin: 0.5rem 0 0 0;">
-                        Silmek için önce içeriği taşımalısınız.
+                        Silmek için önce bu etiketi kullanan postlardan kaldırmalısınız.
                     </p>
                 </div>
             @endif
@@ -446,7 +434,7 @@
     </div>
 
     <script>
-        // Kategori adından otomatik slug oluşturma
+        // Etiket adından otomatik slug oluşturma
         document.getElementById('name').addEventListener('input', function(e) {
             const slugInput = document.getElementById('slug');
 
@@ -473,6 +461,19 @@
         // Slug manuel değiştirilirse otomatik oluşturmayı durdur
         document.getElementById('slug').addEventListener('input', function(e) {
             e.target.dataset.manuallyEdited = 'true';
+        });
+
+        // Form submit olurken slug'ı temizle
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const slugInput = document.getElementById('slug');
+            if (slugInput.value) {
+                slugInput.value = slugInput.value
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^a-z0-9-]/g, '')
+                    .replace(/-+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+            }
         });
     </script>
 @endsection

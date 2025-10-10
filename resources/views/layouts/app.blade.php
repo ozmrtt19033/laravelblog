@@ -137,6 +137,10 @@
                 📝 Kategoriler
             </a>
 
+            <a href="{{ route('tags.index') }}" class="nav-link">
+                📝 Tags
+            </a>
+
             <a href="{{ route('posts.create') }}" class="nav-link">
                 ✨ Yeni Post
             </a>

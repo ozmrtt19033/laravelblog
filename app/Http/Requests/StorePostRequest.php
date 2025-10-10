@@ -17,11 +17,8 @@ class StorePostRequest extends FormRequest
     {
         return [
             'title'  => 'required|string|min:3|max:255',
-            'content'   => 'required|string|min:10',
+            'content' => 'required|string|min:10',  // ← Bu satır olmalı
             'status' => 'nullable|in:draft,published',
-            // eğer categories gönderiyorsan:
-            // 'categories' => 'array',
-            // 'categories.*' => 'exists:categories,id'
         ];
     }
 

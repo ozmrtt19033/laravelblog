@@ -283,19 +283,19 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="body">İçerik</label>
+                    <label class="form-label" for="content">İçerik</label>
                     <textarea
-                        id="body"
-                        name="body"
+                        id="content"
+                        name="content"
                         class="form-textarea"
                         placeholder="Hikayenizi anlatın..."
                         oninput="updateCharCount(this)"
                         required
-                    >{{ old('body') }}</textarea>
+                    >{{ old('content') }}</textarea>
                     <div class="char-counter">
                         <span id="char-count">0</span> karakter
                     </div>
-                    @error('body')
+                    @error('content')
                     <div class="error-message">{{ $message }}</div>
                     @enderror
                 </div>
@@ -303,13 +303,23 @@
                 <div class="form-group">
                     <label class="form-label" for="category_ids">Kategoriler</label>
                     <select name="category_ids[]" id="category_ids" class="form-select" multiple="multiple" style="width: 100%;">
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ in_array($category->id, old('category_ids', [])) ? 'selected' : '' }}>
-                                {{ $category->name }}
-                            </option>
+                        @foreach($categories->whereNull('parent_id') as $parentCategory)
+                            <optgroup label="{{ $parentCategory->name }}">
+                                {{-- Ana kategorinin kendisi --}}
+                                <option value="{{ $parentCategory->id }}" {{ in_array($parentCategory->id, old('category_ids', [])) ? 'selected' : '' }}>
+                                    {{ $parentCategory->name }}
+                                </option>
+
+                                {{-- Bu ana kategoriye ait alt kategoriler --}}
+                                @foreach($parentCategory->children as $subCategory)
+                                    <option value="{{ $subCategory->id }}" {{ in_array($subCategory->id, old('category_ids', [])) ? 'selected' : '' }}>
+                                        -- {{ $subCategory->name }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
                         @endforeach
                     </select>
-                    <span class="section-helper">Birden fazla kategori seçebilirsiniz</span>
+                    <span class="section-helper">Ana kategoriler ve alt kategorilerden birden fazla seçebilirsiniz</span>
                     @error('category_ids')
                     <div class="error-message">{{ $message }}</div>
                     @enderror

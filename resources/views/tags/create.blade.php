@@ -2,12 +2,14 @@
 
 @section('content')
     <style>
-        .edit-container {
+        /* Container */
+        .create-container {
             max-width: 800px;
             margin: 2rem auto;
             padding: 0 2rem;
         }
 
+        /* Header */
         .header {
             margin-bottom: 2rem;
         }
@@ -24,14 +26,15 @@
             font-size: 1rem;
         }
 
+        /* Form Card */
         .form-card {
             background: white;
             border-radius: 16px;
             padding: 2rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            margin-bottom: 1rem;
         }
 
+        /* Form Group */
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -48,7 +51,7 @@
             color: #ef4444;
         }
 
-        .form-control, .form-select {
+        .form-control {
             width: 100%;
             padding: 0.75rem 1rem;
             border: 2px solid #e5e7eb;
@@ -59,7 +62,7 @@
             background: white;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -72,6 +75,7 @@
             line-height: 1.5;
         }
 
+        /* Error Messages */
         .error-message {
             color: #ef4444;
             font-size: 0.875rem;
@@ -81,11 +85,12 @@
             gap: 0.25rem;
         }
 
-        .form-control.is-invalid, .form-select.is-invalid {
+        .form-control.is-invalid {
             border-color: #ef4444;
             background-color: #fef2f2;
         }
 
+        /* Alert */
         .alert {
             padding: 1rem 1.5rem;
             border-radius: 12px;
@@ -108,13 +113,7 @@
             margin: 0.25rem 0;
         }
 
-        .alert-warning {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);
-            margin-top: 1rem;
-        }
-
+        /* Form Actions */
         .form-actions {
             display: flex;
             gap: 1rem;
@@ -122,6 +121,7 @@
             flex-wrap: wrap;
         }
 
+        /* Buttons */
         .btn {
             padding: 0.75rem 2rem;
             border-radius: 8px;
@@ -158,18 +158,7 @@
             box-shadow: 0 4px 8px rgba(107, 114, 128, 0.4);
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
-            width: 100%;
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
-        }
-
+        /* Help Text */
         .help-text {
             color: #6b7280;
             font-size: 0.875rem;
@@ -179,9 +168,10 @@
             gap: 0.5rem;
         }
 
+        /* Info Box */
         .info-box {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-left: 4px solid #f59e0b;
+            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
+            border-left: 4px solid #667eea;
             padding: 1rem;
             border-radius: 8px;
             margin-bottom: 1.5rem;
@@ -189,53 +179,38 @@
 
         .info-box p {
             margin: 0;
-            color: #92400e;
+            color: #4c1d95;
             font-size: 0.9rem;
             line-height: 1.6;
         }
 
-        .stats-box {
-            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .stat-label {
-            color: #4c1d95;
+        /* Slug Preview */
+        .slug-preview {
+            background: #f3f4f6;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            font-family: monospace;
             font-size: 0.875rem;
-            font-weight: 500;
+            color: #6b7280;
+            display: none;
         }
 
-        .stat-value {
-            color: #5b21b6;
-            font-size: 1.5rem;
-            font-weight: 700;
+        .slug-preview.show {
+            display: block;
         }
 
-        .delete-section {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 2px solid #fee2e2;
+        .slug-preview strong {
+            color: #667eea;
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
-            .edit-container {
+            .create-container {
                 padding: 0 1rem;
             }
 
-            .form-card, .delete-section {
+            .form-card {
                 padding: 1.5rem;
             }
 
@@ -250,17 +225,13 @@
             .btn {
                 width: 100%;
             }
-
-            .stats-box {
-                gap: 1rem;
-            }
         }
     </style>
 
-    <div class="edit-container">
+    <div class="create-container">
         <div class="header">
-            <h1>✏️ Kategori Düzenle</h1>
-            <p>"{{ $category->name }}" kategorisini düzenleyin</p>
+            <h1>#️⃣ Yeni Etiket Oluştur</h1>
+            <p>İçeriklerinizi etiketleyerek daha kolay bulunmasını sağlayın</p>
         </div>
 
         @if($errors->any())
@@ -275,76 +246,29 @@
         @endif
 
         <div class="form-card">
-            <!-- İstatistikler -->
-            <div class="stats-box">
-                <div class="stat-item">
-                    <span class="stat-label">📊 Toplam Post</span>
-                    <span class="stat-value">{{ $category->posts->count() }}</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">📁 Alt Kategori</span>
-                    <span class="stat-value">{{ $category->children->count() }}</span>
-                </div>
-                @if($category->created_at)
-                    <div class="stat-item">
-                        <span class="stat-label">📅 Oluşturulma</span>
-                        <span class="stat-value">{{ $category->created_at->format('d.m.Y') }}</span>
-                    </div>
-                @endif
+            <div class="info-box">
+                <p>
+                    💡 <strong>İpucu:</strong> Etiketler, içeriklerinizi daha spesifik konulara göre gruplandırmanıza yardımcı olur.
+                    Örneğin: "Laravel", "PHP", "Web Geliştirme", "Tutorial" gibi etiketler kullanabilirsiniz.
+                </p>
             </div>
 
-            @if($category->children->count() > 0)
-                <div class="info-box">
-                    <p>
-                        ⚠️ <strong>Dikkat:</strong> Bu kategorinin {{ $category->children->count() }} alt kategorisi var.
-                        Üst kategori değiştirirseniz, bu kategori başka bir kategorinin altına taşınacaktır.
-                    </p>
-                </div>
-            @endif
-
-            <form action="{{ route('category.update', $category) }}" method="POST">
+            <form action="{{ route('tags.store') }}" method="POST">
                 @csrf
-                @method('PUT')
-
-                <div class="form-group">
-                    <label for="parent_id" class="form-label">
-                        📁 Üst Kategori
-                    </label>
-                    <select
-                        name="parent_id"
-                        id="parent_id"
-                        class="form-select @error('parent_id') is-invalid @enderror"
-                    >
-                        <option value="">🏠 Ana Kategori (Üst kategorisi yok)</option>
-                        @foreach($parentCategories as $parent)
-                            <option value="{{ $parent->id }}"
-                                {{ old('parent_id', $category->parent_id) == $parent->id ? 'selected' : '' }}>
-                                📂 {{ $parent->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('parent_id')
-                    <div class="error-message">
-                        ⚠️ {{ $message }}
-                    </div>
-                    @enderror
-                    <div class="help-text">
-                        💡 Kategoriyi bir üst kategorinin altına taşımak istiyorsanız seçin. Ana kategori yapmak için boş bırakın.
-                    </div>
-                </div>
 
                 <div class="form-group">
                     <label for="name" class="form-label">
-                        📝 Kategori Adı <span class="required">*</span>
+                        🏷️ Etiket Adı <span class="required">*</span>
                     </label>
                     <input
                         type="text"
                         name="name"
                         id="name"
                         class="form-control @error('name') is-invalid @enderror"
-                        value="{{ old('name', $category->name) }}"
-                        placeholder="Örn: Teknoloji, Seyahat, Yemek Tarifleri..."
+                        value="{{ old('name') }}"
+                        placeholder="Örn: Laravel, React, Yapay Zeka, SEO..."
                         required
+                        autofocus
                     >
                     @error('name')
                     <div class="error-message">
@@ -352,7 +276,7 @@
                     </div>
                     @enderror
                     <div class="help-text">
-                        💡 Kategorinize kısa ve açıklayıcı bir isim verin.
+                        💡 Etiketinize kısa ve öz bir isim verin. Genellikle tek kelime veya kısa ifadeler tercih edilir.
                     </div>
                 </div>
 
@@ -365,16 +289,19 @@
                         name="slug"
                         id="slug"
                         class="form-control @error('slug') is-invalid @enderror"
-                        value="{{ old('slug', $category->slug) }}"
-                        placeholder="teknoloji, yemek-tarifleri..."
+                        value="{{ old('slug') }}"
+                        placeholder="Otomatik oluşturulur... (örn: laravel, yapay-zeka)"
                     >
                     @error('slug')
                     <div class="error-message">
                         ⚠️ {{ $message }}
                     </div>
                     @enderror
+                    <div class="slug-preview" id="slugPreview">
+                        URL: <strong id="slugUrl"></strong>
+                    </div>
                     <div class="help-text">
-                        💡 Kategori adından otomatik oluşturulur. Özel bir URL istiyorsanız değiştirebilirsiniz.
+                        💡 Boş bırakırsanız etiket adından otomatik oluşturulur. URL'de görüneceği için küçük harf ve tire kullanılır.
                     </div>
                 </div>
 
@@ -386,93 +313,110 @@
                         name="description"
                         id="description"
                         class="form-control @error('description') is-invalid @enderror"
-                        placeholder="Bu kategori hangi konuları içerecek? Kısa bir açıklama yazın..."
-                    >{{ old('description', $category->description) }}</textarea>
+                        placeholder="Bu etiket hangi konuları kapsıyor? Kısa bir açıklama yazın..."
+                    >{{ old('description') }}</textarea>
                     @error('description')
                     <div class="error-message">
                         ⚠️ {{ $message }}
                     </div>
                     @enderror
                     <div class="help-text">
-                        💡 Kategorinizin içeriğini tanımlayan kısa bir metin (İsteğe bağlı).
+                        💡 Etiketinizin içeriğini tanımlayan kısa bir metin. Bu açıklama etiket sayfasında görüntülenebilir (İsteğe bağlı).
                     </div>
                 </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
-                        💾 Değişiklikleri Kaydet
+                        ✨ Etiket Oluştur
                     </button>
-                    <a href="{{ route('category.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('tags.index') }}" class="btn btn-secondary">
                         ← Geri Dön
                     </a>
                 </div>
             </form>
         </div>
-
-        <!-- Silme Bölümü (Ayrı Form) -->
-        <div class="delete-section">
-            <h3 style="color: #dc2626; margin: 0 0 1rem 0; font-size: 1.25rem;">
-                🗑️ Tehlikeli Bölge
-            </h3>
-
-            @if($category->posts->count() === 0 && $category->children->count() === 0)
-                <p style="color: #6b7280; margin-bottom: 1rem;">
-                    Bu kategoriyi kalıcı olarak silebilirsiniz. Bu işlem geri alınamaz!
-                </p>
-                <form action="{{ route('category.destroy', $category) }}" method="POST" onsubmit="return confirm('Bu kategoriyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz!')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">
-                        🗑️ Kategoriyi Kalıcı Olarak Sil
-                    </button>
-                </form>
-            @else
-                <div class="alert alert-warning">
-                    ⚠️ <strong>Bu kategori silinemez!</strong>
-                    <ul style="margin: 0.5rem 0 0 1.5rem; padding: 0;">
-                        @if($category->posts->count() > 0)
-                            <li>{{ $category->posts->count() }} adet post içeriyor</li>
-                        @endif
-                        @if($category->children->count() > 0)
-                            <li>{{ $category->children->count() }} adet alt kategori içeriyor</li>
-                        @endif
-                    </ul>
-                    <p style="margin: 0.5rem 0 0 0;">
-                        Silmek için önce içeriği taşımalısınız.
-                    </p>
-                </div>
-            @endif
-        </div>
     </div>
 
     <script>
-        // Kategori adından otomatik slug oluşturma
+        // Etiket adından otomatik slug oluşturma
         document.getElementById('name').addEventListener('input', function(e) {
             const slugInput = document.getElementById('slug');
+            const slugPreview = document.getElementById('slugPreview');
+            const slugUrl = document.getElementById('slugUrl');
 
-            // Sadece slug manuel değiştirilmemişse otomatik oluştur
-            if (slugInput.dataset.manuallyEdited !== 'true') {
+            // Eğer slug inputu boşsa veya otomatik oluşturulmuşsa, yeniden oluştur
+            if (!slugInput.value || slugInput.dataset.autoGenerated === 'true') {
                 let slug = e.target.value
                     .toLowerCase()
                     .trim()
+                    // Türkçe karakterleri dönüştür
                     .replace(/ğ/g, 'g')
                     .replace(/ü/g, 'u')
                     .replace(/ş/g, 's')
                     .replace(/ı/g, 'i')
                     .replace(/ö/g, 'o')
                     .replace(/ç/g, 'c')
+                    // Özel karakterleri temizle
                     .replace(/[^a-z0-9\s-]/g, '')
+                    // Boşlukları tire ile değiştir
                     .replace(/\s+/g, '-')
+                    // Birden fazla tireyi tek tireye çevir
                     .replace(/-+/g, '-')
+                    // Baştaki ve sondaki tireleri kaldır
                     .replace(/^-+|-+$/g, '');
 
                 slugInput.value = slug;
+                slugInput.dataset.autoGenerated = 'true';
+
+                // Slug önizlemesini göster
+                if (slug) {
+                    slugUrl.textContent = '{{ url("/tags") }}/' + slug;
+                    slugPreview.classList.add('show');
+                } else {
+                    slugPreview.classList.remove('show');
+                }
             }
         });
 
         // Slug manuel değiştirilirse otomatik oluşturmayı durdur
         document.getElementById('slug').addEventListener('input', function(e) {
-            e.target.dataset.manuallyEdited = 'true';
+            const slugPreview = document.getElementById('slugPreview');
+            const slugUrl = document.getElementById('slugUrl');
+
+            if (e.target.value) {
+                e.target.dataset.autoGenerated = 'false';
+                // Manuel girişte de önizlemeyi güncelle
+                slugUrl.textContent = '{{ url("/tags") }}/' + e.target.value;
+                slugPreview.classList.add('show');
+            } else {
+                e.target.dataset.autoGenerated = 'true';
+                slugPreview.classList.remove('show');
+            }
+        });
+
+        // Form submit olurken slug'ı temizle
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const slugInput = document.getElementById('slug');
+            if (slugInput.value) {
+                slugInput.value = slugInput.value
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^a-z0-9-]/g, '')
+                    .replace(/-+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+            }
+        });
+
+        // Sayfa yüklendiğinde eski değer varsa slug önizlemesini göster
+        window.addEventListener('DOMContentLoaded', function() {
+            const slugInput = document.getElementById('slug');
+            const slugPreview = document.getElementById('slugPreview');
+            const slugUrl = document.getElementById('slugUrl');
+
+            if (slugInput.value) {
+                slugUrl.textContent = '{{ url("/tags") }}/' + slugInput.value;
+                slugPreview.classList.add('show');
+            }
         });
     </script>
 @endsection

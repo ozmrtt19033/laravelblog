@@ -33,43 +33,28 @@ class PostController extends Controller
     }
 
 
-    // Yeni post formu
-//    public function create()
-//    {
-//        return view('posts.create');
-//    }
-
-    // Yeni post kaydet
-//    public function store(StorePostRequest $request)
-//    {
-//        $data = $request->validated();
-//
-//        $post = $request->user()
-//            ? $request->user()->posts()->create($data)
-//            : Post::create($data + ['user_id' => 1]);
-//
-//        return redirect()->route('posts.index')->with('success', 'Post başarıyla eklendi!');
-//    }
-
     public function store(StorePostRequest $request)
     {
         $data = $request->validated();
 
-        // Postu oluştur
-        $post = $request->user()
-            ? $request->user()->posts()->create($data)
-            : Post::create($data + ['user_id' => 1]);
+        // User ID'yi ekle
+        $data['user_id'] = auth()->id() ?? 1;
 
-        // Kategorileri ve tagleri iliştir
+        // Postu oluştur
+        $post = Post::create($data);
+
+        // Kategorileri iliştir
         if ($request->has('category_ids')) {
             $post->categories()->attach($request->category_ids);
         }
 
+        // Tagleri iliştir
         if ($request->has('tag_ids')) {
             $post->tags()->attach($request->tag_ids);
         }
 
-        return redirect()->route('posts.index')->with('success', 'Post başarıyla eklendi!');
+        return redirect()->route('posts.index')
+            ->with('success', 'Post başarıyla eklendi!');
     }
 
 
@@ -79,34 +64,48 @@ class PostController extends Controller
         return view('posts.show', compact('post'));
     }
 
-    // Post düzenleme formu
-//    public function edit(Post $post)
-//    {
-//        return view('posts.edit', compact('post'));
-//    }
 
-    // Postu güncelle
 //    public function update(UpdatePostRequest $request, Post $post)
 //    {
 //        $post->update($request->validated());
+//
+//        if ($request->has('category_ids')) {
+//            $post->categories()->sync($request->category_ids);
+//        }
+//
+//        if ($request->has('tag_ids')) {
+//            $post->tags()->sync($request->tag_ids);
+//        }
+//
 //        return redirect()->route('posts.index')->with('success', 'Post güncellendi!');
 //    }
 
     public function update(UpdatePostRequest $request, Post $post)
     {
-        $post->update($request->validated());
+        $data = $request->validated();
 
+        // Postu güncelle
+        $post->update($data);
+
+        // Kategorileri senkronize et
         if ($request->has('category_ids')) {
             $post->categories()->sync($request->category_ids);
+        } else {
+            // Eğer category_ids gönderilmemişse, tüm kategorileri temizle
+            $post->categories()->sync([]);
         }
 
+        // Tagleri senkronize et
         if ($request->has('tag_ids')) {
             $post->tags()->sync($request->tag_ids);
+        } else {
+            // Eğer tag_ids gönderilmemişse, tüm tagleri temizle
+            $post->tags()->sync([]);
         }
 
-        return redirect()->route('posts.index')->with('success', 'Post güncellendi!');
+        return redirect()->route('posts.index')
+            ->with('success', 'Post başarıyla güncellendi!');
     }
-
 
     // Postu sil
     public function destroy(Post $post)

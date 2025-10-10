@@ -1,7 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <style>
+
+        /* OptGroup Stilleri */
+        .select2-results__group {
+            font-weight: 700 !important; /* 600'dan 700'e değiştirdim */
+            color: #1f2937 !important; /* Daha koyu renk */
+            background-color: #f9fafb !important;
+            padding: 0.5rem 1rem !important;
+            font-size: 0.95rem !important;
+            border-bottom: 1px solid #e5e7eb !important; /* Alt çizgi ekledim */
+        }
+
+        .select2-results__option {
+            padding: 0.5rem 1rem !important;
+            font-weight: 400 !important; /* Alt kategoriler normal kalınlıkta */
+        }
+
+        /* Seçili ana kategori de kalın olsun */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: none !important;
+            color: white !important;
+            border-radius: 6px !important;
+            padding: 0.35rem 0.75rem !important;
+            margin: 0.25rem !important;
+            font-weight: 600 !important; /* Seçili olanlar da kalın */
+        }
         /* Container Styles */
         .create-container {
             max-width: 800px;
@@ -75,8 +104,7 @@
         }
 
         .form-input,
-        .form-textarea,
-        .form-select {
+        .form-textarea {
             width: 100%;
             padding: 0.75rem 1rem;
             border: 2px solid #e5e7eb;
@@ -84,11 +112,11 @@
             font-size: 1rem;
             transition: all 0.3s;
             font-family: inherit;
+            box-sizing: border-box;
         }
 
         .form-input:focus,
-        .form-textarea:focus,
-        .form-select:focus {
+        .form-textarea:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -97,6 +125,74 @@
         .form-textarea {
             min-height: 200px;
             resize: vertical;
+        }
+
+        /* Select2 Custom Styling */
+        .select2-container--default .select2-selection--multiple {
+            border: 2px solid #e5e7eb !important;
+            border-radius: 8px !important;
+            min-height: 45px !important;
+            padding: 0.25rem 0.5rem !important;
+        }
+
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: none !important;
+            color: white !important;
+            border-radius: 6px !important;
+            padding: 0.35rem 0.75rem !important;
+            margin: 0.25rem !important;
+            font-weight: 500 !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: white !important;
+            margin-right: 0.5rem !important;
+            font-weight: bold !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            color: #fee !important;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background: #667eea !important;
+        }
+
+        .select2-container--default .select2-search--inline .select2-search__field {
+            font-family: inherit !important;
+            padding: 0.25rem !important;
+        }
+
+        .select2-dropdown {
+            border: 2px solid #e5e7eb !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        /* OptGroup Stilleri */
+        .select2-results__group {
+            font-weight: 600 !important;
+            color: #374151 !important;
+            background-color: #f9fafb !important;
+            padding: 0.5rem 1rem !important;
+            font-size: 0.95rem !important;
+        }
+
+        .select2-results__option {
+            padding: 0.5rem 1rem !important;
+        }
+
+        .section-helper {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: block;
         }
 
         /* Character Counter */
@@ -219,7 +315,6 @@
                         class="form-input"
                         value="{{ old('title', $post->title) }}"
                         placeholder="Harika bir başlık yazın..."
-                        maxlength="255"
                         required
                     >
                     @error('title')
@@ -246,16 +341,49 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="status">Durum</label>
-                    <select id="status" name="status" class="form-select">
-                        <option value="draft" {{ old('status', $post->status) == 'draft' ? 'selected' : '' }}>
-                            📝 Taslak
-                        </option>
-                        <option value="published" {{ old('status', $post->status) == 'published' ? 'selected' : '' }}>
-                            🚀 Yayımla
-                        </option>
+                    <label class="form-label" for="category_ids">Kategoriler</label>
+                    <select name="category_ids[]" id="category_ids" class="form-select" multiple="multiple" style="width: 100%;">
+                        @foreach($categories as $category)
+                            @if(is_null($category->parent_id))
+                                {{-- Ana Kategori - Optgroup olarak --}}
+                                <optgroup label="{{ $category->name }}">
+                                    {{-- Ana kategorinin kendisi --}}
+                                    <option value="{{ $category->id }}"
+                                        {{ in_array($category->id, old('category_ids', $post->categories ? $post->categories->pluck('id')->toArray() : [])) ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+
+                                    {{-- Bu ana kategoriye ait alt kategoriler --}}
+                                    @foreach($categories as $subCategory)
+                                        @if($subCategory->parent_id == $category->id)
+                                            <option value="{{ $subCategory->id }}"
+                                                {{ in_array($subCategory->id, old('category_ids', $post->categories ? $post->categories->pluck('id')->toArray() : [])) ? 'selected' : '' }}>
+                                                -- {{ $subCategory->name }}
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </optgroup>
+                            @endif
+                        @endforeach
                     </select>
-                    @error('status')
+                    <span class="section-helper">Ana kategoriler ve alt kategorilerden birden fazla seçebilirsiniz</span>
+                    @error('category_ids')
+                    <div class="error-message">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="tag_ids">Etiketler</label>
+                    <select name="tag_ids[]" id="tag_ids" class="form-select" multiple="multiple" style="width: 100%;">
+                        @foreach($tags as $tag)
+                            <option value="{{ $tag->id }}"
+                                {{ in_array($tag->id, old('tag_ids', $post->tags ? $post->tags->pluck('id')->toArray() : [])) ? 'selected' : '' }}>
+                                {{ $tag->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <span class="section-helper">Birden fazla etiket seçebilirsiniz</span>
+                    @error('tag_ids')
                     <div class="error-message">{{ $message }}</div>
                     @enderror
                 </div>
@@ -275,16 +403,61 @@
         </div>
     </div>
 
+    <!-- jQuery (Select2 için gerekli) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
         function updateCharCount(textarea) {
             const count = textarea.value.length;
             document.getElementById('char-count').textContent = count;
         }
 
-        // Sayfa yüklendiğinde karakter sayısını güncelle
-        document.addEventListener('DOMContentLoaded', function() {
-            const textarea = document.getElementById('content');
-            if (textarea.value) {
+        // Sayfa yüklendiğinde
+        $(document).ready(function() {
+            // Select2 başlat
+            $('#category_ids').select2({
+                allowClear: true,
+                language: {
+                    noResults: function() {
+                        return "Sonuç bulunamadı";
+                    }
+                },
+                templateResult: formatCategory,
+                templateSelection: formatCategorySelection
+            });
+
+            // Kategori görünümünü özelleştir
+            function formatCategory(category) {
+                if (!category.id) {
+                    return category.text;
+                }
+
+                var $category = $(
+                    '<span>' + category.text + '</span>'
+                );
+
+                return $category;
+            }
+
+            // Seçili kategorinin görünümü
+            function formatCategorySelection(category) {
+                return category.text;
+            }
+
+            $('#tag_ids').select2({
+                allowClear: true,
+                language: {
+                    noResults: function() {
+                        return "Sonuç bulunamadı";
+                    }
+                }
+            });
+
+            // Karakter sayısını güncelle
+            const textarea = document.getElementById('body');
+            if (textarea && textarea.value) {
                 updateCharCount(textarea);
             }
         });
